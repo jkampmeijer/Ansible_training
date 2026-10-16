@@ -1,0 +1,5 @@
+# Targets are recreated with new host keys; accept them without prompting.
+Host *
+    StrictHostKeyChecking accept-new
+    UserKnownHostsFile /dev/null
+    LogLevel ERROR

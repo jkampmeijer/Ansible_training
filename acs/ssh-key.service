@@ -1,0 +1,11 @@
+[Unit]
+Description=Generate the SSH key for user ansible
+ConditionPathExists=!/home/ansible/.ssh/id_ed25519
+
+[Service]
+Type=oneshot
+User=ansible
+ExecStart=/usr/bin/ssh-keygen -t ed25519 -N "" -f /home/ansible/.ssh/id_ed25519 -C ansible@acs
+
+[Install]
+WantedBy=multi-user.target

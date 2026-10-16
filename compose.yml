@@ -1,0 +1,68 @@
+x-systemd: &systemd
+  # systemd as PID 1 needs write access to the host's cgroup tree.
+  cgroup: host
+  tmpfs:
+    - /run
+    - /tmp
+
+x-node: &node
+  <<: *systemd
+  build:
+    context: ./node
+    additional_contexts:
+      common: ./common
+  volumes:
+    - ssh-keys:/keys:ro
+    - &cgroup /sys/fs/cgroup:/sys/fs/cgroup:rw
+  depends_on:
+    acs:
+      condition: service_healthy
+
+services:
+  acs:
+    <<: *systemd
+    build:
+      context: ./acs
+      additional_contexts:
+        common: ./common
+    hostname: acs
+    working_dir: /home/ansible
+    ports:
+      - "127.0.0.1:2220:22"
+    volumes:
+      - ssh-keys:/home/ansible/.ssh
+      - ./exercises:/home/ansible/exercises
+      - *cgroup
+    healthcheck:
+      test: ["CMD", "test", "-f", "/home/ansible/.ssh/id_ed25519.pub"]
+      interval: 1s
+    networks:
+      ansible-workshop:
+        ipv4_address: 172.30.0.10
+
+  node1:
+    <<: *node
+    hostname: node1
+    ports:
+      - "127.0.0.1:2221:22"
+    networks:
+      ansible-workshop:
+        ipv4_address: 172.30.0.11
+
+  node2:
+    <<: *node
+    hostname: node2
+    ports:
+      - "127.0.0.1:2222:22"
+    networks:
+      ansible-workshop:
+        ipv4_address: 172.30.0.12
+
+volumes:
+  ssh-keys:
+
+networks:
+  ansible-workshop:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
