@@ -1,0 +1,9 @@
+---
+- name: Ping all hosts
+  hosts: grp_nodes
+  gather_facts: false
+  tasks:
+    - name: Ping
+      ansible.builtin.ping:
+    - name: Collect facts
+      ansible.builtin.setup:

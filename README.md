@@ -72,3 +72,6 @@ ssh-keygen -R "[127.0.0.1]:2221"   # node1 on Windows
 docker compose down      # keeps the SSH key
 docker compose down -v   # also removes the SSH key
 ```
+
+List Modules:
+https://docs.ansible.com/projects/ansible/latest/collections/index_module.html
