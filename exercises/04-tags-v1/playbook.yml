@@ -1,0 +1,28 @@
+---
+- name: Ping all hosts
+  hosts: grp_nodes
+  gather_facts: false
+
+  pre_tasks:
+    - name: Ping
+      ansible.builtin.ping:
+      tags: always
+
+  tasks:
+    - name: Collect facts
+      ansible.builtin.setup:
+      tags: facts
+
+  post_tasks:
+    - name: Debug_msg
+      ansible.builtin.debug:
+        msg: myvar {{ myvar }} ,my2var {{ my2var }}
+      vars:
+        my2var: "{{ myvar }}"
+      tags:
+        - always
+
+
+    # - name: Debug_var
+    #   ansible.builtin.debug:
+    #     var: ansible_facts

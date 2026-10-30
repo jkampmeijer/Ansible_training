@@ -45,6 +45,7 @@ services:
     hostname: node1
     ports:
       - "127.0.0.1:2221:22"
+      - "127.0.0.1:2180:80"
     networks:
       ansible-workshop:
         ipv4_address: 172.30.0.11
@@ -54,6 +55,7 @@ services:
     hostname: node2
     ports:
       - "127.0.0.1:2222:22"
+      - "127.0.0.1:2280:80"
     networks:
       ansible-workshop:
         ipv4_address: 172.30.0.12

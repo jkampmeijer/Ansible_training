@@ -1,0 +1,73 @@
+---
+- name: Ping all hosts
+  hosts: grp_nodes
+  gather_facts: false
+  become: true
+
+  pre_tasks:
+    - name: Ping
+      ansible.builtin.ping:
+      tags: always
+      become: false
+
+  tasks:
+    - name: Collect facts
+      ansible.builtin.setup:
+      tags: facts
+    - name: Copy config.txt
+      ansible.builtin.copy:
+        src: config.txt
+        dest: /etc
+        owner: ansible
+        group: ansible
+        mode: '0644'
+      tags: copy
+    - name: Create config.cfg
+      ansible.builtin.copy:
+        content: |
+          # Config.cfg
+          # Line 2
+          # {{ myvar }}
+        dest: /etc/config.cfg
+        owner: ansible
+        group: ansible
+        mode: '0644'
+      tags: copy
+    - name: Create opt/config dir
+      ansible.builtin.file:
+        path: /opt/config
+        state: directory
+        owner: ansible
+        group: ansible
+        mode: '0755'
+      tags: config2
+    - name: Copy config template
+      ansible.builtin.template:
+        src: opt/config/config2.txt.j2
+        dest: /opt/config/config2.txt
+        owner: ansible
+        group: ansible
+        mode: '0644'
+      tags: config2
+    - name: Install nginx
+      # dnf install nginx -y
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+        # state: absent
+        # autoremove: true
+      tags: nginx
+
+  post_tasks:
+    - name: Debug_msg
+      ansible.builtin.debug:
+        msg: myvar {{ myvar }} ,my2var {{ my2var }}
+      vars:
+        my2var: "{{ myvar }}"
+      tags:
+        - always
+
+
+    # - name: Debug_var
+    #   ansible.builtin.debug:
+    #     var: ansible_facts
