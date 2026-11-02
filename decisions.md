@@ -21,6 +21,11 @@
   not reachable from the host.
 - **Ansible from pip in a venv** (`/opt/ansible`, Python 3.12, version pinned
   in `acs/Dockerfile`): RHEL's `ansible-core` package is too old.
+- **`ansible-lint` in the same venv** (version pinned): students check their
+  playbooks against the same rules as the exercises. The venv has no `lib64`
+  symlink, which would make ansible-lint report every collection twice.
+  `ANSIBLE_HOME` is set explicitly on acs: without a `.git` above the
+  exercises, ansible-lint otherwise caches in the unwritable `/.ansible`.
 - **Ansible environment in `/etc/profile.d/`** on acs: login sessions under
   systemd don't inherit Docker `ENV` variables.
 - **SSH key in a shared named volume** (`ssh-keys`): `acs` generates the key
@@ -44,6 +49,10 @@
   `ansible.cfg` files, introduced in exercise 01: it removes the discovery
   warning and keeps the interpreter fixed, unlike `auto_silent`, which only
   hides the warning.
+- **Builds without provenance attestations** (`provenance: false`): they give
+  every build a new image ID, so `docker compose up -d --build` would recreate
+  all containers after any change. The images stay local, where nobody
+  verifies provenance.
 - **Exercise instructions in English**, matching Ansible docs and module names.
 - **Exercise structure**: each exercise starts from a working setup and asks
   one small change. The solution is the full exercise directory after that
